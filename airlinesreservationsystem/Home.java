@@ -1,27 +1,102 @@
 package airlinesreservationsystem;
 
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.util.Random;
 
 public class Home extends JFrame implements ActionListener{
+    JLabel  labelfname, labelfcode;
+    JButton   flight;
+    Choice source, destination;
+    
     
     public Home() {
+        getContentPane().setBackground(Color.LIGHT_GRAY);
         setLayout(null);
         
         // Background image
-        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("airlinesreservationsystem/icons/front.jpg"));
+        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("airlinesreservationsystem/icons/front1.jpg"));
         JLabel image = new JLabel(i1);
-        image.setBounds(0, 0, 1350, 650);
+        image.setBounds(500, 10, 900, 650);
         add(image);
         
         // Heading text
-        JLabel heading = new JLabel("PZ AIRLINES WELCOMES YOU");
-        heading.setBounds(500, 40, 1000, 40);
-        heading.setForeground(Color.BLUE);
-        heading.setFont(new Font("Tahoma", Font.PLAIN, 36));
+        JLabel heading = new JLabel("Connecting Dreams, One Flight at a Time");
+        heading.setBounds(50, 40, 1000, 40);
+        heading.setForeground(Color.BLACK);
+        heading.setFont(new Font("Tahoma", Font.BOLD, 36));
         image.add(heading);
         
+        JLabel heading2 = new JLabel("Search Your Flights Here");
+        heading2.setBounds(35, 60, 1000, 40);
+        heading2.setForeground(Color.black);
+        heading2.setFont(new Font("Tahoma", Font.BOLD, 36));
+        add(heading2);
+        
+       
+        JLabel lblsource = new JLabel("Source");
+        lblsource.setBounds(60, 200, 150, 25);
+        lblsource.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        add(lblsource);
+        
+        source = new Choice();
+        source.setBounds(220, 200, 150, 25);       
+        add(source);
+        
+        JLabel lbldest = new JLabel("Destination");
+        lbldest.setBounds(60, 250, 150, 25);
+        lbldest.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        add(lbldest);
+        
+        destination = new Choice();
+        destination.setBounds(220, 250, 150, 25);       
+        add(destination);
+        
+        try {
+            Conn c = new Conn();
+            String query = "select * from flight";
+            ResultSet rs = c.s.executeQuery(query);
+            
+            while(rs.next()) {
+                source.add(rs.getString("source"));
+                destination.add(rs.getString("destination"));
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        flight = new JButton("Fetch Flights");
+        flight.setBackground(Color.BLACK);
+        flight.setForeground(Color.WHITE);
+        flight.setBounds(150, 400, 120, 25);
+        flight.addActionListener(this);
+        add(flight);
+        
+        JLabel lblfname = new JLabel("Flight Name");
+        lblfname.setBounds(60, 300, 150, 25);
+        lblfname.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        add(lblfname);
+        
+        labelfname = new JLabel();
+        labelfname.setBounds(220, 300, 150, 25);
+        add(labelfname);
+        
+        JLabel lblfcode = new JLabel("Flight Code");
+        lblfcode.setBounds(60, 350, 150, 25);
+        lblfcode.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        add(lblfcode);
+        
+        labelfcode = new JLabel();
+        labelfcode.setBounds(220, 350, 150, 25);
+        add(labelfcode);
+        
+       
+       
+
         // Menu bar and menu items
         JMenuBar menubar = new JMenuBar();
         setJMenuBar(menubar);
@@ -81,6 +156,37 @@ public class Home extends JFrame implements ActionListener{
         } else if (text.equals("Boarding Pass")) {
             new BoardingPass();  // Open BoardingPass window (This is the new action for Boarding Pass)
         }
+        if (ae.getSource() == flight){
+            String src = source.getSelectedItem();
+            String dest = destination.getSelectedItem();
+            try {
+                Conn conn = new Conn();
+
+                String query = "select * from flight where source = '"+src+"' and destination = '"+dest+"'";
+
+                ResultSet rs = conn.s.executeQuery(query);
+                
+                if (rs.next()) {
+                    labelfname.setText(rs.getString("f_name")); 
+                    labelfcode.setText(rs.getString("f_code")); 
+                } else {
+                    JOptionPane.showMessageDialog(null, "No Flights Found");                
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else  {
+            Random random = new Random();
+            
+            String flightname = labelfname.getText(); 
+            String flightcode = labelfcode.getText();
+            String src = source.getSelectedItem(); 
+            String des = destination.getSelectedItem();
+           
+            
+          
+        }
+        
     }
     
     public static void main(String[] args) {
